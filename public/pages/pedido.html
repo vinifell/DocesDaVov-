@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Pedido - Doces da Vovó</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/stylePedido.css">
+</head>
+<body>
+    <header>
+        <section id="headerP1">
+            <h1>Doces da Vovó</h1>
+            <h2>CONFEITARIA ARTESANAL</h2>
+        </section>
+        <nav>
+            <a href="../index.html" id="Produtos">Produtos</a>
+            <a href="pedido.html" id="Pedido" class="paginaSelecionada">Meu Pedido</a>
+        </nav>
+    </header>
+    <main>
+        <h2>Meu Pedido</h2>
+        <p class="confira">Confira os itens selecionados e envie os seus dados para fazer o pedido</p>
+        <section class="carrinho">
+            <section class="vazio">
+                <p class="icon">🛒</p>
+                <p class="text">Seu pedido está vazio. Volte ao cardápio e adicione alguns doces!</p>
+            </section>
+            <section class="possui">
+                <section class="campos">
+                    <ul class="pedidos">
+                        <li class="pedido">
+                            <section class="dadosPedido">
+                                <h4>Bolo de Cenoura</h4>
+                                <p>R$50,00 cada</p>
+                            </section>
+                            <section class="deletar">
+                                <div class="botoes">
+                                    <button>-</button>
+                                    <p>1</p>
+                                    <button>+</button>
+                                </div>
+                                <button class="lixeira">🗑</button>
+                            </section>
+                        </li>
+                        <li class="pedido">
+                            <section class="dadosPedido">
+                                <h4>Bolo de Cenoura</h4>
+                                <p>R$50,00 cada</p>
+                            </section>
+                            <section class="deletar">
+                                <div class="botoes">
+                                    <button>-</button>
+                                    <p>1</p>
+                                    <button>+</button>
+                                </div>
+                                <button class="lixeira">🗑</button>
+                            </section>
+                        </li>
+                    </ul>
+                    <section class="total">
+                        <h3 class="testando">Total</h3>
+                        <p>R$ 100,00</p>
+                    </section>
+                </section>
+                <section class="campos">
+                    <h3>Seus dados</h3>
+                    <form>
+                        <div>
+                            <label for="nome">NOME COMPLETO</label>
+                            <input type="text" id="nome" name="nome" placeholder="Seu nome" required>
+                        </div>
+                        <div>
+                            <label for="telefone">TELEFONE/WHATSAPP</label>
+                            <input type="text" id="telefone" name="telefone" placeholder="(34) 99999-0000" required>
+                        </div>
+                        <div>
+                            <label for="mensagem">MENSAGEM(OPCIONAL)</label>
+                            <textarea name="mensagem" id="mensagem" class="mensagem" placeholder="Alguma observação sobre o pedido? Ex: data de entrega, sabor, etc."></textarea>
+                        </div>
+                        <button>Enviar pedido</button>
+                    </form>
+                </section>
+            </section>
+        </section>
+    </main>
+    <footer>
+        <p>Doces da Vovó - Projeto de estudo(Node + Express + MySQL)</p>
+    </footer>
+</body>
+</html>

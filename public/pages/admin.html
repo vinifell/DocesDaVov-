@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - Doces da Vovó</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/styleAdmin.css">
+</head>
+<body>  
+    <header>
+        <section id="headerP1">
+            <h1>Doces da Vovó</h1>
+            <h2>PAINEL ADMINISTRATIVO</h2>
+        </section>
+        <nav>
+            <a href="../index.html">Ver site</a>
+        </nav>
+    </header>
+    <main>
+        <section class="titulo">
+            <h2>Painel Administrativo</h2>
+            <p>Gerencie pedidos, produtos e categorias da confeitaria</p>
+        </section>
+        <section class="tabelas">
+            <nav>
+                <button id="pedidos" class="selecionado">Pedidos</button>
+                <button id="produtos">Produtos</button>
+                <button id="categorias">Categorias</button>
+            </nav>
+            <!--class="escondido"-->
+            <section class="cadastrarNovo escondido">
+                <p id="cadastrados">5 produtos cadastrados</p>
+                <button commandfor="modalCategoria" command="show-modal" id="adicionar">+ Novo produto</button>
+            </section>
+            <section class="containerTabelas">
+                <table id="tabela">
+                    <tr>
+                        <th>#</th>
+                        <th>CLIENTE</th>
+                        <th>TELEFONE</th>
+                        <th>RECEBIDO EM</th>
+                        <th>STATUS</th>
+                        <th></th>
+                    </tr>
+                    <tr class="data">
+                        <td>#2</td>
+                        <td>Alberto Luiz</td>
+                        <td>34991234567</td>
+                        <td>10/07/2026, 11:23</td>
+                        <td>
+                            <select name="status" id="status">
+                                <option value="novo">Novo</option>
+                                <option value="andamento">Em andamento</option>
+                                <option value="concluido">Concluído</option>
+                            </select>
+                        </td>
+                        <td><button>Ver itens</button></td>
+                    </tr>
+                </table>
+            </section>
+            <section class="failedBanco">
+                <p class="icon">⚠️</p>
+                <p class="text">Failed to fetch</p>
+            </section>
+            <section class="carregando">
+                <p>Carregando produtos...</p>
+            </section>
+            <section class="nenhumPedido">
+                <p class="icon" id="icone">📭</p><!--🍰, 🏷️-->
+                <p class="text" id="texto">Nenhum pedido recebido ainda</p>
+            </section>
+        </section>
+    </main>
+
+
+    <dialog id="modalCategoria">
+        <section class="PrimeiraLinha">
+            <h3 id="tituloNova">Nova categoria</h3>
+            <Button  commandFor="modalCategoria" command="close">×</Button>
+        </section>
+        <form id="meuForm">
+            <section class="inputs">
+                <section class="linhaUnica input">
+                    <label for="nomeCategoria">NOME</label>
+                    <input type="text" id="nomeCategoria" name="nomeCategoria" placeholder="Ex: Bolos" required>
+                </section>
+            </section>
+            <section class="botoes">
+                <button type="button" class="cancelar">Cancelar</button>
+                <button type="submit" class="salvar">Salvar categoria</button>
+            </section>
+        </form>
+    </dialog>
+    <dialog id="modalCerteza">
+        <section class="PrimeiraLinha">
+            <h3 id="tituloExcluir">Excluir Categoria</h3>
+            <button commandFor="modalCerteza" command="close">x</button>
+        </section>
+        <p class="mensagem" id="mensagem">Deseja realmente excluir a categoria abaixo?</p>
+        <p id="Categoria">Bolos</p>
+        <section class="botoes">
+            <button class="cancelar">Cancelar</button>
+            <button class="excluir">Excluir</button>
+        </section>
+    </dialog>
+    <footer>
+        <p>Doces da Vovó - Painel administrativo (uso interno)</p>
+    </footer>
+
+    <div id="acao">Cadastrar</div>
+    <div id="id" class="escondido">0</div>
+    <script type="module" src="../javascript/admin.js"></script>
+</body>
+</html>

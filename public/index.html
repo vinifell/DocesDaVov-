@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doces da Vovó</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <section id="headerP1">
+            <h1>Doces da Vovó</h1>
+            <h2>CONFEITARIA ARTESANAL</h2>
+        </section>
+        <nav>
+            <a href="index.html" id="Produtos" class="paginaSelecionada">Produtos</a>
+            <a href="pages/pedido.html" id="Pedido">Meu Pedido</a>
+        </nav>
+    </header>
+    <main>
+        <section id="apresentacao">
+            <h2>Doces feitos com carinho</h2>
+            <p>Conheça nossos bolos, doces e tortas artesanais. Escolha seus favoritos e faça seu pedido - é rápido e simples!</p>
+        </section>
+        <section class="cardapio">
+            <h3>Nosso Cardápio</h3>
+            <p class="selecione">Selecione uma categoria ou veja todos os produtos disponíveis</p>
+            <section class="infPrincipais-Cardapio">
+                <section class="botoes">
+                    <button class="botao selecionado">Todos</button>
+                    <button class="botao">Bolos</button>
+                </section>
+                <ul class="produtos">
+                
+                    <li class="produto">
+                        <p class="icon">🍰</p>
+                        <section class="infProduto">
+                            <p class="categorias">BOLOS</p>
+                            <h4>Bolo de Cenoura</h4>
+                            <p class="descricao">Bolo com recheio de chocolate</p>
+                            <section class="preco_adicionar">
+                                <p class="preco">R$30,00</p>
+                                <button>+ Adicionar</button>
+                            </section>
+                        </section>
+                    </li>
+
+                    <li class="produto">
+                        <p class="icon">🍰</p>
+                        <section class="infProduto">
+                            <p class="categorias">BOLOS</p>
+                            <h4>Bolo de Cenoura</h4>
+                            <p class="descricao none">none</p>
+                            <section class="preco_adicionar">
+                                <p class="preco">R$50,00</p>
+                                <button>+ Adicionar</button>
+                            </section>
+                        </section>
+                    </li>
+                </ul>
+                <section class="nenhumProduto">
+                    <p class="icon">🍰</p>
+                    <p class="text">Nenhum produto encontrado nesta categoria</p>
+                </section>
+            </section>
+            <section class="failedBanco">
+                <p class="icon">⚠️</p>
+                <p class="text">Failed to fetch</p>
+            </section>
+            <section class="carregando">
+                <p>Carregando produtos...</p>
+            </section>
+        </section>
+    </main>
+    <footer>
+        <p>Doces da Vovó - Projeto de estudo(Node + Express + MySql) <a href="pages/admin.html">· Painel admin</a></p>
+    </footer>
+</body>
+</html>

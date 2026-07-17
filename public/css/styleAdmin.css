@@ -1,0 +1,411 @@
+:root{
+    --bg:          #faf7f0;   /* marfim — fundo principal */
+    --bg-2:        #f3efe3;   /* bege claro — superfícies (cards, hero) */
+    --bg-3:        #ebe5d4;   /* bege médio — hover, inputs */
+    --border:      #ddd4bd;   /* bege-acinzentado — bordas */
+    --text:        #3d3a33;   /* marrom-café escuro — texto principal */
+    --text-muted:  #8a8275;   /* bege-acinzentado escuro — texto secundário */
+    --accent:      #6e9b7c;   /* verde-sálvia — destaque principal */
+    --accent-dim:  #50775c;   /* verde-sálvia escuro — hover do destaque */
+    --accent-glow: rgba(110,155,124,0.16);
+    --green:       #6e9b7c;
+    --red:         #c1543f;   /* terracota — erros/indisponível, sem ser agressivo */
+    --radius:      10px;
+    --radius-sm:   6px;
+    --shadow:      0 4px 20px rgba(61,58,51,0.08);
+    --font-head:   'Syne', sans-serif;
+    --font-body:   'DM Sans', sans-serif;
+}
+
+main{
+    width: 65rem;
+    margin: 0 auto;
+    padding-top: 20px;
+}
+
+.titulo{
+    width: 100%;
+}
+
+.titulo h2{
+    font-family: var(--font-head);
+    color: var(--text);
+    font-size: 1.4rem;
+}
+
+.titulo p{
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+.tabelas{
+    margin-top: 40px;
+}
+
+.tabelas nav{
+    width: 18.9rem;
+}
+
+.tabelas nav button{
+    color: var(--text-muted);
+    border: none;
+    width: 7rem;
+    justify-content: flex-start;
+    font-size: 15px;
+    padding-bottom: 7px;
+    font-weight: 500;
+}
+
+.tabelas nav .selecionado{
+    color: var(--accent-dim);
+    border-bottom: 2px solid var(--accent-dim);
+    font-weight: 600;
+}
+
+table{
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    width: 100%;
+    margin-top: 25px;
+    padding-bottom: 10px;
+}
+
+tr, .tr{
+    display: grid;
+    grid-template-columns: 8.7% 1fr 1fr 1fr 1fr 1fr;
+    height: 45px;
+}
+
+.tabelaProdutos{
+    grid-template-columns:  1fr 1fr 1fr 1fr 2fr;
+}
+
+.tabelaCategorias{
+    grid-template-columns: 1fr 2fr;
+}
+
+.editar{
+    color: var(--text);
+}
+
+.deletar{
+    color: var(--red);
+}
+
+th, .th{
+    font-family: var(--font-head);
+    color: var(--text-muted);
+    background-color: var(--bg-3);
+    font-size: 12px;
+}
+
+td{
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
+
+table{
+    background-color: var(--bg-2);
+}
+
+tr{
+    width: 100%;
+}
+
+th, td{
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 10px;
+    padding-top: 10px;
+}
+
+td select, td button{
+    background-color: var(--bg-3);
+    height: 35px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-weight: 100;
+    padding-left: 8px;
+}
+
+td button{
+    padding-right: 8px;
+}
+
+.data{
+    background-color: var(--bg-2);
+    border-top: 2px solid var(--border);
+    padding-bottom: 55px;
+}
+.cadastrarNovo{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.cadastrarNovo p{
+    color: var(--text-muted);
+}
+
+.cadastrarNovo button{
+    background-color: var(--accent);
+    color: white;
+    width: 8rem;
+    padding: 8px 0;
+    border-radius: var(--radius-sm);
+    border: none;
+    font-family: var(--font-body);
+}
+
+.nenhumPedido{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 81px;
+}
+
+.nenhumPedido .icon{
+    font-size: 2.2rem;
+}
+
+.nenhumPedido .text{
+    margin-top: 10px;
+}
+
+.on{
+    background-color: var(--accent-glow);
+    width: 87px;
+    height: 3vh;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0px;
+    border-radius: 50px;
+    color: var(--green);
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.status{
+    height: 3vh;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.off{
+    background-color: #c1553f1e; ;
+    width: 90px;
+    height: 3vh;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0px;
+    border-radius: 50px;
+    color: var(--red);
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.escondido{
+    display: none;
+}
+
+.containerTabelas{
+    display: none;
+}
+
+.carregando{
+    display: none;
+    justify-content: center;
+}
+
+dialog{
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    width: 480px;
+    height: 25vh;
+    padding: 25px;
+    padding-bottom: 15px;
+    background-color: var(--bg-2);
+}
+
+dialog::backdrop{
+    background-color: #5f5b4f89;
+}
+
+.PrimeiraLinha{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.PrimeiraLinha h3{
+    font-family: var(--font-head);
+    color: var(--text);
+}
+
+.PrimeiraLinha button{
+    font-size: 1.1rem;
+    cursor: pointer;
+    border: none;
+}
+
+#modalCategoria form{
+    margin-top: 20px;
+}
+
+.inputs{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.linhaUnica{
+    grid-column: 1/-1;
+}
+
+.input{
+    display: flex;
+    flex-direction: column;
+}
+
+.input label{
+    font-family: var(--font-head);
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.input input, .input select, .input textarea{
+    height: 4vh;
+    padding-left: 10px;
+    background-color: var(--bg-3);
+    color: var(--text);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    width: 100%;
+}
+
+.input textarea{
+    height: 9vh;
+}
+
+.botoes{
+    margin-top: 33px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.botoes button{
+    padding: 5px;
+    height: 4vh;
+    font-family: var(--font-body);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+}
+
+.cancelar{
+    background-color: var(--bg-3);
+    width: 90px;
+}
+
+.salvar{
+    background-color: var(--accent);
+    width: 135px;
+    color: white;
+}
+
+#acao{
+    color: white;
+}
+
+.mensagem{
+    font-family: var(--font-head);
+    margin-top: 30px;
+    text-align: center;
+    font-size: 1rem;
+    color: var(--text);
+}
+
+#Categoria{
+    text-align: center;
+    font-size: 1.3rem;
+    color: var(--text);
+    margin-top: 10px;
+}
+
+#modalCerteza .botoes{
+    justify-content: center;
+}
+
+#modalCerteza .botoes button{
+    width: 140px;
+}
+
+.excluir{
+    background-color: var(--red);
+    color: white;
+}
+
+.disponivel label{
+    font-family: var(--font-head);
+    font-size: 14px;
+    color: var(--text-muted);
+
+}
+
+@media (max-width: 1100px){
+    main{
+        width: 95%;
+    }
+}
+
+@media (max-width: 700px){
+    .containerTabelas{
+        overflow-x: auto;
+    }
+
+    table{
+        min-width: 1000px;
+    }
+
+    .titulo h2, .titulo p{
+        text-align: center;
+    }
+
+    .cadastrarNovo{
+        flex-direction: column;
+    }
+
+    .cadastrarNovo p{
+        text-align: center;
+    }
+
+    .cadastrarNovo button{
+        margin-top: 10px;
+        width: 100%;
+    }
+}
+
+@media (max-width: 500px){
+    .tabelas nav{
+        width: 100%;
+        text-align: center;
+    }
+}
