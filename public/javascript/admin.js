@@ -5,7 +5,6 @@ const BtnProdutos = document.querySelector("#produtos");
 const BtnCategorias = document.querySelector("#categorias");
 const cadastrarNovo = document.querySelector(".cadastrarNovo");
 const modal = document.querySelector("#modalCategoria");
-const cancelar = document.querySelector(".cancelar");
 const form = document.querySelector("#meuForm");
 const acao = document.querySelector("#acao");
 const id = document.querySelector("#id");
@@ -59,11 +58,6 @@ modal.addEventListener('click', (event)=>{
 
 })
 
-cancelar.addEventListener("click", ()=> {
-    form.reset();
-    modal.close();
-})
-
 form.addEventListener("submit", (event)=>{
     event.preventDefault();
 
@@ -94,11 +88,14 @@ function renderizar(localizacao){
     const texto = document.querySelector("#texto");
     const nenhum = document.querySelector(".nenhumPedido");
     mudarModal(localizacao);
+    console.log(localizacao);
 
     let banco = pegarBanco(localizacao);
+    console.log(banco);
 
     if(localizacao !== "pedidos"){
         cadastrado.innerText = `${banco.length} ${localizacao} cadastrad${localizacao == "categorias" ? "a" : "o"}s`;
+        adicionar.innerText = `Nov${localizacao == "categorias" ? "a" : "o"} ${localizacao == "categorias" ? "categoria" : "produto"}`;
     }
     const containerTabela = document.querySelector(".containerTabelas");
 
@@ -116,12 +113,10 @@ function renderizar(localizacao){
                 texto.innerText = "Nenhum pedido recebido ainda";
             break;
             case "produtos":
-                adicionar.innerText = "+ Novo produto";
                 icone.innerText = "🍰";
                 texto.innerText = "Nenhum produto cadastrado ainda";
             break;
             case "categorias":
-                adicionar.innerText = "+ Nova categoria";
                 icone.innerText = "🏷️";
                 texto.innerText = "Nenhuma categoria cadastrada ainda."; 
             break;
@@ -152,10 +147,14 @@ export function editar(i){
     id.innerText = i;
     
     for(const chave in banco[i]){
-        if(chave !== "disponivel" && banco[i].disponivel == "off"){
+        if(chave !== "disponivel"){
             document.querySelector(`#${chave}`).value = banco[i][chave];
         }else{
-            document.querySelector("#disponivel").checked = false
+            if(banco[i].disponivel === "on"){
+                document.querySelector("#disponivel").checked = true;
+            }else{
+                document.querySelector("#disponivel").checked = false;
+            }
         }
     }
 }
@@ -194,6 +193,14 @@ function mudarModal(localizacao){
     titulo.innerHTML = modalTemplate[localizacao].titulo;
     form.innerHTML = modalTemplate[localizacao].template;
     modal.style.height = modalTemplate[localizacao].height;
+
+    const cancelar = document.querySelector(".cancelar"); 
+
+    cancelar.addEventListener("click", ()=> {
+        form.reset();
+        modal.close();
+        acao.innerText = "Cadastrar";
+    })
 
     if(localizacao === "produtos") preencherSelect();
 }
@@ -275,3 +282,7 @@ const templatesCerteza = {
         titulo: "Excluir Categoria"
     }
 }
+
+localizacao = pegarLocalizacao();
+
+renderizar(localizacao);

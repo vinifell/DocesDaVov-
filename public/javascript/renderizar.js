@@ -19,7 +19,14 @@ export function renderizarTabelas(localizacao){
 
 const templateHeader = {
     pedidos: `
-        <p>Testando Pedidos</p>
+        <tr>
+            <th>#</th>
+            <th>CLIENTE</th>
+            <th>TELEFONE</th>
+            <th>RECEBIDO EM</th>
+            <th>STATUS</th>
+            <th></th>
+        </tr>
     `,
     produtos: `
         <tr class="tabelaProdutos">
@@ -39,8 +46,21 @@ const templateHeader = {
 }
 
 const templates = {
-    pedidos: `
-    
+    pedidos: (item, i) => `
+        <tr class="data">
+            <td>#${i}</td>
+            <td>${item.cliente.nome}</td>
+            <td>${item.cliente.telefone}</td>
+            <td>10/07/2026, 11:23</td>
+            <td>
+                <select name="status" id="status">
+                    <option value="novo">Novo</option>
+                    <option value="andamento">Em andamento</option>
+                    <option value="concluido">Concluído</option>
+                </select>
+            </td>
+            <td><button>Ver itens</button></td>
+        </tr>
     `,
     produtos: (item, i) => `
         <tr class="tabelaProdutos">

@@ -43,6 +43,7 @@
                                 <button class="lixeira">🗑</button>
                             </section>
                         </li>
+
                         <li class="pedido">
                             <section class="dadosPedido">
                                 <h4>Bolo de Cenoura</h4>
@@ -60,12 +61,12 @@
                     </ul>
                     <section class="total">
                         <h3 class="testando">Total</h3>
-                        <p>R$ 100,00</p>
+                        <p id="total">R$ 100,00</p>
                     </section>
                 </section>
                 <section class="campos">
                     <h3>Seus dados</h3>
-                    <form>
+                    <form id="meuForm">
                         <div>
                             <label for="nome">NOME COMPLETO</label>
                             <input type="text" id="nome" name="nome" placeholder="Seu nome" required>
@@ -87,5 +88,6 @@
     <footer>
         <p>Doces da Vovó - Projeto de estudo(Node + Express + MySQL)</p>
     </footer>
+    <script src="../javascript/pedido.js"></script>
 </body>
 </html>
