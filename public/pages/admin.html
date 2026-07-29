@@ -83,7 +83,7 @@
             <section class="inputs">
                 <section class="linhaUnica input">
                     <label for="nomeCategoria">NOME</label>
-                    <input type="text" id="nomeCategoria" name="nomeCategoria" placeholder="Ex: Bolos" required>
+                    <input type="number" id="nomeCategoria" name="nomeCategoria" placeholder="Ex: Bolos" required>
                 </section>
             </section>
             <section class="botoes">
@@ -105,25 +105,29 @@
         </section>
     </dialog>
     <dialog id="detalhesPedido">
-        <section>
+        <section class="PrimeiraLinha">
             <h3>Detalhes do pedido</h3>
-            <button>x</button>
+            <button commandFor="detalhesPedido" command="close">x</button>
         </section>
-        <p><span>Cliente: </span>Vinicius Fellipe Silva</p>
-        <p><span>Telefone: </span>34991285148</p>
+        <section class="dadosCliente">
+            <p class="nome" id="nome"><span>Cliente: </span>Vinicius Fellipe Silva</p>
+            <p class="Telefone" id="telefone"><span>Telefone: </span>34991285148</p>
+        </section>
         <h4>Itens:</h4>
-        <section>
-            <p>1x Bolo de Morango</p>
-            <p>R$25,00</p>
+        <section class="itens">
+            <section class="item">
+                <p>1x Bolo de Morango</p>
+                <p>R$25,00</p>
+            </section>
         </section>
-        <section>
+        <section class="Total">
             <h4>Total</h4>
-            <p>R$25,00</p>
+            <p id="totalDetalhes">R$25,00</p>
         </section>
-        <section>
-            <button>Excluir</button>
-            <button>Editar</button>
-            <button>Fechar</button>
+        <section class="botoes" id="botoesDetalhes">
+            <button class="excluir">Excluir</button>
+            <button class="editar">Editar</button>
+            <button class="cancelar fechar" commandFor="detalhesPedido" command="close">Fechar</button>
         </section>
     </dialog>
     <footer>

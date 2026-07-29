@@ -1,4 +1,4 @@
-import { editar, excluir } from "./admin.js";
+import { editar, excluir, preencherModal } from "./admin.js";
 
 export function renderizarTabelas(localizacao){
     let banco = JSON.parse(localStorage.getItem(localizacao));
@@ -13,6 +13,10 @@ export function renderizarTabelas(localizacao){
 
         if(e.target.classList.contains("deletar")){
             excluir(e.target.dataset.id);
+        }
+        
+        if(e.target.classList.contains("verItens")){
+            preencherModal(e.target.dataset.id);
         }
     })    
 }
@@ -51,7 +55,7 @@ const templates = {
             <td>#${i}</td>
             <td>${item.cliente.nome}</td>
             <td>${item.cliente.telefone}</td>
-            <td>10/07/2026, 11:23</td>
+            <td>${item.hora}</td>
             <td>
                 <select name="status" id="status">
                     <option value="novo">Novo</option>
@@ -59,7 +63,7 @@ const templates = {
                     <option value="concluido">Concluído</option>
                 </select>
             </td>
-            <td><button>Ver itens</button></td>
+            <td><button commandFor="detalhesPedido" command="show-modal" data-id="${i}" class="verItens">Ver itens</button></td>
         </tr>
     `,
     produtos: (item, i) => `
@@ -70,7 +74,7 @@ const templates = {
             <td class="${item.disponivel}">${item.disponivel == "on"? "Disponivel": "Indisponível"}</td>
             <td>                
                 <section>
-                    <button class="editar" data-id=${i}>Editar</button>
+                    <button class="editar" data-id=${i} commandfor="modalCategoria" command="show-modal">Editar</button>
                     <button class="deletar" data-id=${i} command="show-modal" commandFor="modalCerteza">Excluir</button>
                 </section>
             </td>
@@ -81,7 +85,7 @@ const templates = {
             <td>${item.nomeCategoria}</td>
             <td>
                 <section>
-                    <button class="editar" data-id=${i}>Editar</button>
+                    <button class="editar" data-id=${i} commandfor="modalCategoria" command="show-modal">Editar</button>
                     <button class="deletar" data-id=${i} command="show-modal" commandFor="modalCerteza">Excluir</button>
                 </section>
             </td>

@@ -8,6 +8,7 @@ const modal = document.querySelector("#modalCategoria");
 const form = document.querySelector("#meuForm");
 const acao = document.querySelector("#acao");
 const id = document.querySelector("#id");
+localStorage.setItem("localizacao", "pedidos");
 let localizacao = localStorage.getItem("localizacao");
 let categorias = JSON.parse(localStorage.getItem('categorias')) || [];
 
@@ -61,7 +62,9 @@ modal.addEventListener('click', (event)=>{
 form.addEventListener("submit", (event)=>{
     event.preventDefault();
 
-    const data = Object.fromEntries(new FormData(form));
+    console.log("Ouviu submit!");
+    
+    let data = Object.fromEntries(new FormData(form));
     console.log(data);
     localizacao = pegarLocalizacao();
     let banco = pegarBanco(localizacao);
@@ -69,6 +72,17 @@ form.addEventListener("submit", (event)=>{
     if(acao.innerText === "Cadastrar"){
         banco.push(data);
     }else{
+        if(localizacao === "pedidos"){
+            const produtos = JSON.parse(localStorage.getItem("produtosEdicao"));
+            const dados = data;
+            console.log(produtos);
+            data = {
+                cliente: data,
+                produtos: produtos,
+                hora: banco[+id.innerText].hora
+            }
+            console.log(data);
+        }
         console.log(id.innerText);
         banco[+id.innerText] = data;
         acao.innerText = "Cadastrar";
@@ -78,6 +92,7 @@ form.addEventListener("submit", (event)=>{
     salvar(banco, localizacao);
     form.reset();
     modal.close();
+    if(localizacao === "pedidos") preencherModal(id.innerText);
     renderizar(localizacao);
 })
 
@@ -137,7 +152,6 @@ function pegarBanco(banco){
 }
 
 export function editar(i){
-    modal.show();
 
     const localizacao = pegarLocalizacao();
     const banco = pegarBanco(localizacao);
@@ -146,9 +160,9 @@ export function editar(i){
     acao.innerText = "Edição";
     id.innerText = i;
     
-    for(const chave in banco[i]){
+    for(const chave in banco[i].cliente){
         if(chave !== "disponivel"){
-            document.querySelector(`#${chave}`).value = banco[i][chave];
+            document.querySelector(`#${chave}`).value = banco[i].cliente[chave];
         }else{
             if(banco[i].disponivel === "on"){
                 document.querySelector("#disponivel").checked = true;
@@ -156,6 +170,12 @@ export function editar(i){
                 document.querySelector("#disponivel").checked = false;
             }
         }
+    }
+
+    if(localizacao === "pedidos"){
+        const total = document.querySelector("#total");
+        const valorTotal = calcularTotal(banco[i].produtos);
+        total.innerText = "R$" + valorTotal.toFixed(2);
     }
 }
 
@@ -169,7 +189,8 @@ export function excluir(i){
 
     titulo.innerText = templatesCerteza[localizacao].titulo;
     mensagem.innerText = templatesCerteza[localizacao].mensagem;
-    categoria.innerText = banco[i][templatesCerteza[localizacao].nome];
+    categoria.innerText = "Pedido #" + i;
+    if(localizacao !== "pedidos")categoria.innerText = banco[i][templatesCerteza[localizacao].nome];
     
     const modalCerteza = document.querySelector("#modalCerteza");
     modalCerteza.addEventListener('click', (event) => {
@@ -182,16 +203,19 @@ export function excluir(i){
             salvar(banco, localizacao);
             renderizar(localizacao);
             modalCerteza.close();
+            if(localizacao === "pedidos"){
+                const modal = document.querySelector("#detalhesPedido");
+                modal.close();
+            }
         }
     })
 }
 
 function mudarModal(localizacao){
-    if(localizacao === "pedidos") return;
-
     const titulo = document.querySelector("#tituloNova");
     titulo.innerHTML = modalTemplate[localizacao].titulo;
     form.innerHTML = modalTemplate[localizacao].template;
+    console.log(localizacao)
     modal.style.height = modalTemplate[localizacao].height;
 
     const cancelar = document.querySelector(".cancelar"); 
@@ -214,7 +238,203 @@ function preencherSelect(){
     }
 }
 
+export function preencherModal(i){
+    console.log(i);
+    const modal = document.querySelector("#detalhesPedido");
+    const dadosCliente = document.querySelector(".dadosCliente");
+    const itens = document.querySelector(".itens");
+    const total = document.querySelector("#totalDetalhes");
+    const botoes = document.querySelector("#botoesDetalhes");
+    const pedidos = pegarBanco("pedidos");
+    let alturaModal = 350;
+    let precoTotal = 0;
+
+    const cliente = pedidos[i].cliente;
+    const produtos = pedidos[i].produtos;
+
+    dadosCliente.innerHTML = "";
+    dadosCliente.innerHTML = `
+        <p class="nome" id="nome"><span>Cliente: </span> ${cliente.nome}</p>
+        <p class="Telefone" id="telefone"><span>Telefone: </span>${cliente.telefone}</p>
+    `
+
+    if(cliente.mensagem){
+        dadosCliente.innerHTML += `<p><span>Mensagem: </span>${cliente.mensagem}</p>`;
+        alturaModal += 21;
+    }
+
+    itens.innerHTML = ""
+    itens.innerHTML += produtos.map(produto => `
+        <section class="item">
+            <p>${produto.quantidade}x ${produto.nomeProduto}</p>
+            <p>R$${produto.quantidade * produto.preco}</p>
+        </section>`).join("");
+
+    if(produtos.length > 1){
+        alturaModal += 31 * (produtos.length - 1);
+    }
+
+    produtos.forEach(produto => {
+        precoTotal += (produto.preco * produto.quantidade);
+    });
+
+    botoes.innerHTML = `
+        <button class="excluir" data-id=${i} command="show-modal" commandFor="modalCerteza">Excluir</button>
+        <button class="editar" data-id=${i} commandfor="modalCategoria" command="show-modal">Editar</button>
+        <button class="cancelar fechar" commandFor="detalhesPedido" command="close" data-id=${i}>Fechar</button>`;
+
+    botoes.addEventListener('click', (event) =>{
+        if(event.target.classList.contains("editar")){
+            editar(event.target.dataset.id);
+
+            let banco = pegarBanco("pedidos");
+            const produtos = banco[i].produtos
+            const pedidos = document.querySelector(".pedidos");
+            pedidos.innerHTML = produtos.map((item, index) => `
+                <li class="pedido">
+                    <section class="dadosPedido">
+                        <h4>${item.nomeProduto}</h4>
+                        <p>R$${item.preco} cada</p>
+                    </section>
+                    <section class="deletarPedidos">
+                        <div class="botoesPedidos">
+                            <button type="button" class="diminuir" data-id=${index}>-</button>
+                            <p id="PrQ${index}">${item.quantidade}</p>
+                            <button type="button" class="adicionar" data-id=${index}>+</button>
+                        </div>
+                        <button type="button" class="lixeira" data-id=${index}>🗑</button>
+                    </section>
+                </li>
+            `).join("");
+
+            const buttonsAdicionar = document.querySelectorAll(".adicionar");
+            const buttonsDiminuir = document.querySelectorAll(".diminuir");
+            const lixeiras = document.querySelectorAll(".lixeira");
+            let produtosEdicao = produtos;
+            localStorage.setItem("produtosEdicao", JSON.stringify(produtosEdicao));
+
+            buttonsAdicionar.forEach(button => {
+                button.addEventListener("click", (event)=>{
+                    let id = event.target.dataset.id;
+                    let produtosEdicao = JSON.parse(localStorage.getItem("produtosEdicao"));
+                    console.log("id: " + id);
+
+                    const quantidade = document.querySelector(`#PrQ${id}`);
+                    quantidade.innerText++;
+                    produtosEdicao[id].quantidade++;
+                    salvar(produtosEdicao, "produtosEdicao");
+                    console.log(produtosEdicao);
+
+                    const totalEdicao = document.querySelector("#total");
+                    totalEdicao.innerText = "R$" + calcularTotal(produtosEdicao).toFixed(2);
+                })
+            })
+
+            buttonsDiminuir.forEach(button => {
+                button.addEventListener("click", (event)=>{
+                    let id = event.target.dataset.id;
+                    let produtosEdicao = JSON.parse(localStorage.getItem("produtosEdicao"));
+                    console.log("id: " + id);
+
+                    const quantidade = document.querySelector(`#PrQ${id}`);
+                    if(quantidade.innerText > 1){
+                        quantidade.innerText--;
+                        produtosEdicao[id].quantidade--;
+                        salvar(produtosEdicao, "produtosEdicao");
+                        console.log(produtosEdicao);
+                    }else{
+                        console.log("Chegou a 0")
+                    }
+                    
+                    const totalEdicao = document.querySelector("#total");
+                    totalEdicao.innerText = "R$" + calcularTotal(produtosEdicao).toFixed(2);
+                })
+            })
+
+            lixeiras.forEach(lixeira => {
+                lixeira.addEventListener("click", (event)=>{
+                    let id = event.target.dataset.id;
+                    let produtosEdicao = JSON.parse(localStorage.getItem("produtosEdicao"));
+
+                    produtosEdicao.splice(id, 1);
+                    salvar(produtosEdicao, "produtosEdicao");
+                    console.log(produtosEdicao);
+
+                    pedidos.innerHTML = produtosEdicao.map((item, index) => `
+                        <li class="pedido">
+                            <section class="dadosPedido">
+                                <h4>${item.nomeProduto}</h4>
+                                <p>R$${item.preco} cada</p>
+                            </section>
+                            <section class="deletarPedidos">
+                                <div class="botoesPedidos">
+                                    <button type="button" class="diminuir" data-id=${index}>-</button>
+                                    <p id="PrQ${index}">${item.quantidade}</p>
+                                    <button type="button" class="adicionar" data-id=${index}>+</button>
+                                </div>
+                                <button type="button" class="lixeira" data-id=${index}>🗑</button>
+                            </section>
+                        </li>
+                    `).join("");
+                    
+                    const totalEdicao = document.querySelector("#total");
+                    totalEdicao.innerText = "R$" + calcularTotal(produtosEdicao).toFixed(2);
+                })
+            })
+        }
+
+        if(event.target.classList.contains("excluir")){
+            excluir(event.target.dataset.id);
+        }
+
+    })
+
+
+    total.innerText = "R$" + calcularTotal(produtos).toFixed(2);
+    
+    modal.style.height = alturaModal + "px";
+}
+
+function calcularTotal(banco){
+    let valorTotal = 0
+    banco.forEach(item => valorTotal += (item.preco * item.quantidade));
+    return valorTotal;
+}
+
 const modalTemplate = {
+    pedidos: {
+        titulo: "Editar Pedido",
+        template: `
+            <section class="inputs">
+                <h2 class="linhaUnica titulo">Cliente:</h2>
+                <section class="input">
+                    <label for="nome">NOME</label>
+                    <input type="text" id="nome" name="nome" placeholder="Ex: Vinicius Fellipe Silva" required>
+                </section>
+                <section class="input">
+                    <label for="telefone">TELEFONE</label>
+                    <input type="number" name="telefone" id="telefone" required>
+                </section>
+                <section class="linhaUnica input">
+                    <label for="mensagem">Mensagem</label>
+                    <textarea name="mensagem" id="mensagem" placeholder="Breve descrição do produto"></textarea>
+                </section>
+                <h2 class="titulo">Produtos: </h2>
+                <section class="linhaUnica campos">
+                    <ul class="pedidos">
+                    </ul>
+                    <section class="total">
+                            <h3 class="testando">Total</h3>
+                            <p id="total">R$ 100,00</p>
+                    </section>
+                </section>
+            </section>
+            <section class="botoes">
+                <button type="button" class="cancelar">Cancelar</button>
+                <button type="submit" class="salvar">Salvar produto</button>
+            </section>`,
+        height: "70vh"
+    },
     produtos: {
         titulo: "Novo produto",
         template: `
@@ -231,7 +451,7 @@ const modalTemplate = {
                 </section>
                 <section class="input">
                     <label for="preco">PREÇO (R$)</label>
-                    <input type="number" id="preco" name="preco" placeholder="0,00" required>
+                    <input type="number" id="preco" name="preco" placeholder="0.00" step="0.01" required>
                 </section>
                 <section class="linhaUnica input">
                     <label for="descricao">DESCRICAO</label>
@@ -270,7 +490,10 @@ const modalTemplate = {
 }
 
 const templatesCerteza = {
-    pedidos: ` `,
+    pedidos: {
+        mensagem: "Deseja realmente excluir o pedido abaixo",
+        titulo: "Excluir Pedido"
+    },
     produtos: {
         nome: "nomeProduto",
         mensagem: "Deseja realmente excluir o produto abaixo?",

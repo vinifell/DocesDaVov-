@@ -370,6 +370,173 @@ dialog::backdrop{
 
 }
 
+#detalhesPedido{
+    height: 350px;
+    font-family: var(--font-body);
+}
+
+#detalhesPedido h3{
+    font-size: 1.2rem;
+}
+
+.dadosCliente{
+    margin: 13px 0;
+}
+
+.dadosCliente span{
+    color: var(--text);
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.dadosCliente p{
+    color: var(--text);
+}
+
+#detalhesPedido h4{
+    color: var(--text);
+}
+
+.item{
+    display: flex;
+    color: var(--text-muted);
+    justify-content: space-between;
+    font-size: 13px;
+    margin: 20px 0;
+}
+
+.Total{
+    display: flex;
+    justify-content: space-between;
+    color: var(--text);
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+#detalhesPedido .botoes{
+    margin-top: 60px;
+}
+
+#detalhesPedido .botoes button{
+    width: 20%;
+}
+
+#detalhesPedido .botoes .editar{
+    background-color: var(--accent);
+    color: white;
+}
+
+
+
+
+.campos{
+    background-color: var(--bg-2);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    margin-top: 20px;
+    margin-bottom: 15px;
+    padding: 15px;
+    width: 100%;
+}
+
+.pedidos{
+    list-style-type: none;
+    display: grid;
+    padding-top: 10px;
+}
+
+.pedido{
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--border);
+    padding-top: 20px;
+}
+
+.dadosPedido h4{
+    font-weight: 500;
+    color: var(--text);
+    font-size: 15px;
+}
+
+.dadosPedido p{
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.deletarPedidos{
+    display: flex;
+    align-items: center;
+    height: fit-content;
+}
+
+.deletarPedidos button{
+    height: 25px;
+    width: 25px;
+    font-size: 1.1rem;
+    background-color: var(--bg-3);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+}
+
+.lixeira{
+    height: 25px;
+    width: 25px;
+    margin-left: 7px;
+}
+
+.botoesPedidos{
+    margin-top: 2%;
+    width: 4.4rem;
+    gap: 7px;
+    display: flex;
+}
+
+.deletar button{
+    height: 25px;
+    width: 25px;
+    font-size: 1.1rem;
+    background-color: var(--bg-3);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+}
+
+.total{
+    display: flex;
+    border-top: 2px solid var(--border);
+    margin-top: 6px;
+    justify-content: space-between;
+    padding: 15px 20px;
+}
+
+.total h3{
+    font-weight: 600;
+    font-family: var(--font-head);
+    color: var(--text);
+    font-size: 1.2rem;
+}
+
+.total p{
+    font-family: var(--font-head);
+    font-size: 1.2rem;
+    color: var(--text);
+    font-weight: 600;
+}
+
+.campos h3{
+    font-family: var(--font-head);
+    color: var(--text);
+    font-size: 1.1rem;
+    margin-top: 10px;
+    margin-bottom: 17px;
+}
+
+.titulo{
+    font-family: var(--font-head);
+    color: var(--text);
+    font-size: 1.1rem;
+}
+
 @media (max-width: 1100px){
     main{
         width: 95%;

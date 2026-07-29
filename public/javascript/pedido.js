@@ -18,8 +18,11 @@ form.addEventListener("submit", (event)=>{
 
     let pedido = {
         cliente,
-        produtos: carrinho
+        produtos: carrinho,
+        hora: pegarHora()
     }
+
+    console.log(pedido);
 
     pedidosTabela.push(pedido);
     salvar(pedidosTabela, "pedidos");
@@ -105,4 +108,14 @@ function renderizar(){
 
 function salvar(banco, nome){
     localStorage.setItem(nome, JSON.stringify(banco));
+}
+
+function pegarHora(data = new Date()){
+    return data.toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
 }
