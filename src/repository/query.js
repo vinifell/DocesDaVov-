@@ -35,11 +35,13 @@ export async function selectUnico(campo, valor, banco){
         const [resposta] = await db.query(`SELECT * FROM ${banco} WHERE ${campo}`, valor);
         return {
             sucesso: true,
+            status: 200,
             resposta
         }
     }catch(error){
         return {
             sucesso: false,
+            status: 500,
             Erro: error.message
         }
     }
@@ -49,11 +51,13 @@ export async function update(banco, campos, validacao, valores){
     try{
         await db.query(`UPDATE ${banco} SET ${campos} WHERE ${validacao}`, valores);
         return {
-            sucesso: true
+            sucesso: true,
+            status: 200
         }
     }catch(error){
         return{
             sucesso: false,
+            status: 500,
             Erro: error.message
         }
     }
@@ -63,11 +67,13 @@ export async function deletar(banco, validacao, valor){
     try{
         await db.query(`DELETE FROM ${banco} WHERE ${validacao}`, valor);
         return {
-            sucesso: true
+            sucesso: true,
+            status: 200
         }
     }catch(error){
         return {
             sucesso: false,
+            status: 500,
             Erro: error.message
         }
     }
