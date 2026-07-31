@@ -24,13 +24,20 @@ export async function post(req, res){
         })
         return
     }
-
-    const resposta = await insert("produtos(nomeProduto, preco, disponivel, idCategoria)", "?, ?, ?, ?", [nomeProduto, preco, disponivel, idCategoria]);
-    console.log(resposta);
-    if(resposta.sucesso){
-        res.status(200).json(resposta);
+    
+    const existe = await selectUnico("idCategoria = ?", [idCategoria], "categorias")
+    if(existe.sucesso){
+        if(existe.resposta.length){
+            const resposta = await insert("produtos(nomeProduto, preco, disponivel, idCategoria)", "?, ?, ?, ?", [nomeProduto, preco, disponivel, idCategoria]);
+            res.status(resposta.status).json(resposta);
+        }else{
+            res.status(400).json({
+                sucesso: false,
+                Erro: "Categoria não existe, tente novamente!"
+            })
+        }
     }else{
-        res.status(500).json(resposta)
+        res.status(500).json(existe);
     }
 }
 
@@ -52,8 +59,9 @@ export async function put(req, res){
         }
     };
     const existe = await selectUnico("idProduto = ?", [id], "produtos");
-    if(existe.sucesso){
-        if(existe.resposta.length){
+    const existeCategoria = await selectUnico("idCategoria = ?", [req.body.idCategoria], "categorias");
+    if(existe.sucesso && existeCategoria.sucesso){
+        if(existe.resposta.length && existeCategoria.resposta.length){
             if(campos.length){
                 const resposta = await update("produtos", campos, "idProduto = ?", [...Object.values(req.body), id]);
                 res.status(resposta.status).json(resposta);
@@ -63,14 +71,22 @@ export async function put(req, res){
                     Erro: "Dados inválidos, é necessario enviar pelo menos um dado para a edição ocorrer!"
                 })
             }
+        }else if(existe.resposta.length){
+            res.status(400).json({
+                sucesso: false,
+                Erro: "ID inválido, produto não existe, tente novamente"
+            })
         }else{
             res.status(400).json({
                 sucesso: false,
-                Erro: "ID inválido, usuario não existe, tente novamente"
+                Erro: "Categoria inválida, categoria não existe, tente novamente"
             })
         }
     }else{
-        res.status(500).json(existe)
+        res.status(500).json({
+            ...existe,
+            ...existeCategoria
+        })
     }
     res.end();
 }

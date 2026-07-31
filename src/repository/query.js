@@ -5,11 +5,13 @@ export async function select(banco){
         const [response] = await db.query(`SELECT * FROM ${banco}`);
         return {
             sucesso: true,
+            status: 200,
             response 
         }
     }catch(error){
         return {
             sucesso: false,
+            status: 500,
             Erro: error.message
         }
     }
@@ -17,22 +19,23 @@ export async function select(banco){
 
 export async function insert(banco, campos, valores){
     try{
-        console.log(`INSERT INTO ${banco} values(${campos})`, valores);
         await db.query(`INSERT INTO ${banco} values(${campos})`, valores)
         return {
-            sucesso: true
+            sucesso: true,
+            status: 200
         }
     }catch(error){
         return{
             sucesso: false,
+            status: 500,
             Erro: error.message
         }
     }
 }
 
-export async function selectUnico(campo, valor, banco){
+export async function selectUnico(validacao, valor, banco){
     try{
-        const [resposta] = await db.query(`SELECT * FROM ${banco} WHERE ${campo}`, valor);
+        const [resposta] = await db.query(`SELECT * FROM ${banco} WHERE ${validacao}`, valor);
         return {
             sucesso: true,
             status: 200,
