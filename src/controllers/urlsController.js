@@ -5,6 +5,12 @@ export async function get(req, res){
     res.status(resposta.status).json(resposta);
 }
 
+export async function getUnico(req, res){
+    const idProduto = req.params.idProduto;
+    const resposta = await selectUnico("idProduto = ?", [idProduto], "urlProduto");
+    res.status(resposta.status).json(resposta);
+}
+
 export async function post(req, res){;
     const { url, idProduto } = req.body;
     if(!url, !idProduto){

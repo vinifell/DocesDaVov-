@@ -1,5 +1,5 @@
 import express from "express";
-import { excluir, get, getUnico, post, put } from "../controllers/urlsController.js";
+import { excluir, get, getUnico, post, put } from "../controllers/descricaoController.js";
 
 const router = express.Router();
 
