@@ -61,6 +61,21 @@ export async function excluir(req, res) {
     const id = req.params.id;
     const existe = await selectUnico("idCategoria = ?", [id], "categorias");
     console.log(existe);
+
+    const possui = await selectUnico("idCategoria = ?", [id], "produtos");
+
+    if(possui.sucesso){
+        if(possui.resposta.length){
+            res.status(400).json({
+                sucesso: false,
+                Erro: "Existe um produto cadastrado nessa categoria, É necessario excluir o produto primeiro antes de excluir a categoria!"
+            })
+            return
+        }
+    }else{
+        res.status(500).json(possui);
+    }
+
     if(existe.sucesso){
         if(existe.resposta.length){
             const resposta = await deletar("categorias", "idCategoria = ?", [id]);

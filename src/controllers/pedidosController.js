@@ -93,6 +93,36 @@ export async function excluir(req, res){
         return
     }
 
+    let possui = await selectUnico("idPedido = ?", [id], "mensagens");
+
+    if(possui.sucesso){
+        if(possui.resposta.length){
+            res.status(400).json({
+                sucesso: false,
+                Erro: "Existe pelo menos uma mensagem cadastrada neste pedido, É necessario excluir a mensagem primeiro antes de excluir este pedido!"
+            })
+            return
+        }
+    }else{
+        res.status(500).json(possui);
+        return
+    }
+
+    possui = await selectUnico("idPedido = ?", [id], "itens_pedido");
+
+    if(possui.sucesso){
+        if(possui.resposta.length){
+            res.status(400).json({
+                sucesso: false,
+                Erro: "Existe itens cadastrados neste pedido, É necessario excluir os itens primeiro antes de excluir este pedido!"
+            })
+            return
+        }
+    }else{
+        res.status(500).json(possui);
+        return
+    }
+
     const pedidoAntigo = await selectUnico("idPedido = ?", id, "pedidos");
     if(!pedidoAntigo.resposta.length){
         res.status(400).json({

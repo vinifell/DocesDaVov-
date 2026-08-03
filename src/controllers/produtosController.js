@@ -94,6 +94,52 @@ export async function put(req, res){
 export async function excluir(req, res){
     const id = req.params.id;
     const existe = await selectUnico("idProduto = ?", [id], "produtos");
+
+    let possui = await selectUnico("idProduto = ?", [id], "descricao");
+
+    if(possui.sucesso){
+        if(possui.resposta.length){
+            res.status(400).json({
+                sucesso: false,
+                Erro: "Existe uma descricao cadastrada neste produto, É necessario excluir a descricao primeiro antes de excluir este produto!"
+            })
+            return
+        }
+    }else{
+        res.status(500).json(possui);
+        return
+    }
+
+    possui = await selectUnico("idProduto = ?", [id], "urlProduto");
+
+    if(possui.sucesso){
+        if(possui.resposta.length){
+            res.status(400).json({
+                sucesso: false,
+                Erro: "Existe uma url cadastrada para este produto, É necessario excluir a url primeiro antes de excluir este produto!"
+            })
+            return
+        }
+    }else{
+        res.status(500).json(possui);
+        return
+    }
+
+    possui = await selectUnico("idProduto = ?", [id], "itens_pedido");
+
+    if(possui.sucesso){
+        if(possui.resposta.length){
+            res.status(400).json({
+                sucesso: false,
+                Erro: "Existe itens cadastrados neste produto, É necessario excluir os itens primeiro antes de excluir este produto!"
+            })
+            return
+        }
+    }else{
+        res.status(500).json(possui);
+        return
+    }
+
     if(existe.sucesso){
         if(existe.resposta.length){
             const resposta = await deletar("produtos", "idProduto = ?", [id]);
