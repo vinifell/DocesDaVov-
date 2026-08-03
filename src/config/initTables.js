@@ -72,4 +72,5 @@ export async function initTable(){
             FOREIGN KEY (idProduto) REFERENCES produtos(idProduto)
         )
     `);
+    
 }

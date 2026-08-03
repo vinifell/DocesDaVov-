@@ -6,6 +6,7 @@ import routerUrls from "./routes/urlsProdutos.js";
 import routerDesc from "./routes/descricao.js";
 import routerPedidos from "./routes/pedidos.js";
 import routerMensgens from "./routes/mensagens.js";
+import routerItens from "./routes/itens.js";
 
 const app = express();
 
@@ -17,5 +18,6 @@ app.use("/urlsProdutos", routerUrls);
 app.use("/descricao", routerDesc);
 app.use("/pedidos", routerPedidos);
 app.use("/mensagens", routerMensgens);
+app.use("/itens", routerItens);
 
 export default app;

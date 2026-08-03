@@ -71,7 +71,7 @@ export async function deletar(banco, validacao, valor){
         await db.query(`DELETE FROM ${banco} WHERE ${validacao}`, valor);
         return {
             sucesso: true,
-            status: 200
+            status: 200 
         }
     }catch(error){
         return {
