@@ -33,12 +33,20 @@ export async function post(req, res){
 export async function put(req, res){
     const id = req.params.id;
     let campos = ["nomeCliente", "telefoneCliente"];
-    for(let index in campos){
+    for(let index=2; index>-1; index--){
         if(req.body[campos[index]]){
             campos[index] = campos[index] + " = ?";
         }else{
             campos.splice(index, 1);
         }
+    }
+
+    if(!campos.length){ 
+        res.status(400).json({
+            sucesso: false,
+            Erro: "É necessario pelo menos um item para a edição!"
+        })
+        return
     }
 
     if(req.body.telefoneCliente) req.body.telefoneCliente = formatarTelefone(req.body.telefoneCliente);
