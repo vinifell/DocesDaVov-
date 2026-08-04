@@ -28,8 +28,10 @@ export async function post(req, res){
     const existe = await selectUnico("idCategoria = ?", [idCategoria], "categorias")
     if(existe.sucesso){
         if(existe.resposta.length){
-            const resposta = await insert("produtos(nomeProduto, preco, disponivel, idCategoria)", "?, ?, ?, ?", [nomeProduto, preco, disponivel, idCategoria]);
-            res.status(resposta.status).json(resposta);
+            console.log("Vai postar");
+            res.send("Olá mundo!");
+            // const resposta = await insert("produtos(nomeProduto, preco, disponivel, idCategoria)", "?, ?, ?, ?", [nomeProduto, preco, disponivel, idCategoria]);
+            // res.status(resposta.status).json(resposta);
         }else{
             res.status(400).json({
                 sucesso: false,

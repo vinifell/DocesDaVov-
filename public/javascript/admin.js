@@ -1,4 +1,5 @@
 import { renderizarTabelas } from "./renderizar.js";
+import { separarArquivos } from "./utils.js";
 
 const BtnPedidos = document.querySelector("#pedidos");
 const BtnProdutos = document.querySelector("#produtos");
@@ -48,7 +49,7 @@ BtnCategorias.addEventListener('click', ()=>{
     renderizar(localizacao);
 })
 
-modal.addEventListener('click', (event)=>{
+modal.addEventListener('click', async (event)=>{
     const rect = modal.getBoundingClientRect();
 
     const clicouDentro = event.clientX >= rect.left && event.clientX <= rect.right && event.clientY <= rect.bottom && event.clientY >= rect.top;
@@ -67,46 +68,29 @@ form.addEventListener("submit", (event)=>{
     let data = Object.fromEntries(new FormData(form));
     console.log(data);
     localizacao = pegarLocalizacao();
-    let banco = pegarBanco(localizacao);
+    // let banco = await pegarBanco(localizacao);
     if(localizacao === "produtos" && !data.disponivel) data.disponivel = "off";
-    if(acao.innerText === "Cadastrar"){
-        banco.push(data);
-    }else{
-        if(localizacao === "pedidos"){
-            const produtos = JSON.parse(localStorage.getItem("produtosEdicao"));
-            const dados = data;
-            console.log(produtos);
-            data = {
-                cliente: data,
-                produtos: produtos,
-                hora: banco[+id.innerText].hora
-            }
-            console.log(data);
-        }
-        console.log(id.innerText);
-        banco[+id.innerText] = data;
-        acao.innerText = "Cadastrar";
-    }
-    
-    console.log(banco);
-    salvar(banco, localizacao);
+    const resposta = salvar(data, localizacao);
     form.reset();
     modal.close();
     if(localizacao === "pedidos") preencherModal(id.innerText);
     renderizar(localizacao);
 })
 
-function renderizar(localizacao){
+async function renderizar(localizacao){
     const cadastrado = document.querySelector("#cadastrados");
     const adicionar = document.querySelector("#adicionar");
     const icone = document.querySelector("#icone");
     const texto = document.querySelector("#texto");
     const nenhum = document.querySelector(".nenhumPedido");
     mudarModal(localizacao);
-    console.log(localizacao);
 
-    let banco = pegarBanco(localizacao);
-    console.log(banco);
+    let resposta = await pegarBanco(localizacao);
+    if(!resposta.sucesso){
+        alert(resposta.Erro);
+        return
+    }
+    let banco = resposta.response;
 
     if(localizacao !== "pedidos"){
         cadastrado.innerText = `${banco.length} ${localizacao} cadastrad${localizacao == "categorias" ? "a" : "o"}s`;
@@ -117,7 +101,7 @@ function renderizar(localizacao){
     if(banco.length){
         containerTabela.style.display = "flex";
         nenhum.style.display = "none";
-        renderizarTabelas(localizacao);
+        await renderizarTabelas(localizacao);
     }else{
         containerTabela.style.display = "none";
         nenhum.style.display = "flex";
@@ -139,32 +123,159 @@ function renderizar(localizacao){
     }
 }
 
-function salvar(banco, nome){
-    localStorage.setItem(nome, JSON.stringify(banco));
+async function salvar(dados, localizacao){
+    if(acao.innerText == "Cadastrar"){
+        let resposta;
+        console.log(localizacao);
+        if(localizacao !== "produtos" && localizacao !== "pedidos"){
+            console.log("Entrou!")
+            // resposta = await fetch(`http://localhost:3000/${localizacao}`, {
+            //     method: "POST",
+            //     headers: {
+            //         "Content-Type": "application/json"
+            //     },
+            //     body: JSON.stringify(dados)
+            // });
+        }else if(localizacao === "produtos"){
+            separarArquivos(dados);
+        }
+        const respostaFormatada = await resposta.json();
+        return respostaFormatada;
+    }else{
+        const resposta = await fetch(`http://localhost:3000/${localizacao}/${+id.innerText}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(dados)
+        });
+        acao.innerText = "Cadastrar";
+        const respostaFormatada = await resposta.json();
+        return respostaFormatada;
+    }
 }
 
 function pegarLocalizacao(){
     return localStorage.getItem("localizacao");
 }
 
-function pegarBanco(banco){
-    return JSON.parse(localStorage.getItem(banco)) || [];
+export async function pegarBanco(banco){
+    const resposta = await fetch(`http://localhost:3000/${banco}`);
+    const data = await resposta.json();
+    return data
 }
 
-export function editar(i){
+export async function pegarChavesEstrangeiras(localizacao, banco) {
+    if(localizacao == "produtos"){
+        const respostaCategorias = await fetch(`http://localhost:3000/categorias`);
+        const respostaDescricao = await fetch(`http://localhost:3000/descricao`);
+        const respostaUrl = await fetch(`http://localhost:3000/urlsProdutos`);
+        const categorias = (await respostaCategorias.json()).response;
+        const descricoes = (await respostaDescricao.json()).response;
+        const urlsProdutos = (await respostaUrl.json()).response;
+
+        banco.forEach(dado => {
+            categorias.forEach(categoria => {
+                if(categoria.idCategoria === dado.idCategoria){
+                    dado.nomeCategoria = categoria.nomeCategoria;
+                }
+            })
+            descricoes.forEach(descricao => {
+                if(dado.idProduto === descricao.idProduto){
+                    dado.descricao = descricao.descricao;
+                }
+            })
+            urlsProdutos.forEach(url => {
+                if(url.idProduto === dado.idProduto){
+                    dado.url = url.url;
+                }
+            })
+        });
+
+        return banco;
+    }
+
+    if(localizacao == "categorias"){
+        return banco;
+    }
+
+    if(localizacao == "pedidos"){
+        const respostaMensagens = await fetch(`http://localhost:3000/mensagens`);
+        const respostaItens = await fetch(`http://localhost:3000/itens`);
+        const respostaProdutos = await fetch(`http://localhost:3000/produtos`);
+        const mensagens = (await respostaMensagens.json()).response;
+        const itens = (await respostaItens.json()).response;
+        const data = (await respostaProdutos.json()).response;
+        const produtos = await pegarChavesEstrangeiras("produtos", data);
+        let NovoBanco = [];
+        banco.forEach(pedido => {
+            let hora = pedido.recebidoEm.replace(/\D/g, "");
+            hora = hora.replace(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{5})/, "$3/$2/$1, $4:$5");
+            NovoBanco.push({cliente: pedido, hora: hora});
+            
+        });
+
+        let NovoItens = [];
+        NovoBanco.forEach(pedido => {
+            pedido.produtos = [];
+            mensagens.forEach(mensagem => {
+                if(pedido.cliente.idPedido === mensagem.idPedido){
+                    pedido.cliente.mensagem = mensagem.mensagem;
+                }
+            });
+
+            itens.forEach(item => {
+                let obj = {};
+                produtos.forEach(produto =>{
+                    if(produto.idProduto === item.idProduto){
+                        obj = {...produto, quantidade: item.quantidade};
+                    }
+                });
+
+                if(pedido.cliente.idPedido === item.idPedido){
+                    pedido.produtos.push(obj);
+                }
+            });
+
+        });
+        return NovoBanco;
+    }
+}
+
+export async function editar(i){
 
     const localizacao = pegarLocalizacao();
-    const banco = pegarBanco(localizacao);
+    const dados = await pegarBanco(localizacao);
+    if(!dados.sucesso){
+        alert(dados.Erro);
+        return
+    }
+    const banco = await pegarChavesEstrangeiras(localizacao, dados.response);
     const acao = document.querySelector("#acao");
     const id = document.querySelector("#id");
     acao.innerText = "Edição";
     id.innerText = i;
-    
-    for(const chave in banco[i].cliente){
+    let dado = {};
+    banco.forEach(data => {
+        if(localizacao === "produtos" && data.idProduto === i){
+            dado = data;
+        }
+
+        if(localizacao === "pedidos" && data.idPedido === i){
+            dado = data;
+        }
+
+        if(localizacao === "categorias" && Number(data.idCategoria) === Number(i)){
+            dado = data;
+        }
+    });
+    for(const chave in dado){
         if(chave !== "disponivel"){
-            document.querySelector(`#${chave}`).value = banco[i].cliente[chave];
+            if(chave !== "idCategoria" && chave !== "idPedido" && chave !== "idProduto"){
+                document.querySelector(`#${chave}`).value = dado[chave];
+            }
         }else{
-            if(banco[i].disponivel === "on"){
+            if(banco[i].disponivel === 1){
                 document.querySelector("#disponivel").checked = true;
             }else{
                 document.querySelector("#disponivel").checked = false;
@@ -179,9 +290,16 @@ export function editar(i){
     }
 }
 
-export function excluir(i){
+export async function excluir(i){
     const localizacao = pegarLocalizacao();
-    const banco = pegarBanco(localizacao);
+    const banco = (await pegarBanco(localizacao)).response;
+
+    let bancoEscolhido = {};
+    banco.forEach(data =>{
+        if(data.idCategoria == i){
+            bancoEscolhido = data;
+        }
+    });
 
     const titulo = document.querySelector("#tituloExcluir");
     const mensagem = document.querySelector("#mensagem");
@@ -190,22 +308,29 @@ export function excluir(i){
     titulo.innerText = templatesCerteza[localizacao].titulo;
     mensagem.innerText = templatesCerteza[localizacao].mensagem;
     categoria.innerText = "Pedido #" + i;
-    if(localizacao !== "pedidos")categoria.innerText = banco[i][templatesCerteza[localizacao].nome];
+    if(localizacao !== "pedidos")categoria.innerText = bancoEscolhido[templatesCerteza[localizacao].nome];
     
     const modalCerteza = document.querySelector("#modalCerteza");
-    modalCerteza.addEventListener('click', (event) => {
+    modalCerteza.addEventListener('click', async (event) => {
         if(event.target.classList.contains("cancelar")){
             modalCerteza.close();
         }
 
         if(event.target.classList.contains("excluir")){
-            banco.splice(i, 1);
-            salvar(banco, localizacao);
-            renderizar(localizacao);
-            modalCerteza.close();
-            if(localizacao === "pedidos"){
-                const modal = document.querySelector("#detalhesPedido");
-                modal.close();
+            const resposta = await fetch(`http://localhost:3000/${localizacao}/${i}`, {
+                method: "DELETE"
+            });
+            const resultado = await resposta.json();
+            if(resultado.sucesso){
+                alert("Categoria excluida com sucesso!")
+                renderizar(localizacao);
+                modalCerteza.close();
+                if(localizacao === "pedidos"){
+                    const modal = document.querySelector("#detalhesPedido");
+                    modal.close();
+                }
+            }else{
+                alert(resultado.Erro);
             }
         }
     })
@@ -215,7 +340,6 @@ function mudarModal(localizacao){
     const titulo = document.querySelector("#tituloNova");
     titulo.innerHTML = modalTemplate[localizacao].titulo;
     form.innerHTML = modalTemplate[localizacao].template;
-    console.log(localizacao)
     modal.style.height = modalTemplate[localizacao].height;
 
     const cancelar = document.querySelector(".cancelar"); 
@@ -229,23 +353,23 @@ function mudarModal(localizacao){
     if(localizacao === "produtos") preencherSelect();
 }
 
-function preencherSelect(){
+async function preencherSelect(){
     const select = document.querySelector("#nomeCategoria");
-    const categorias = pegarBanco("categorias");
-    if(categorias.length){
+    const categorias = await pegarBanco("categorias");
+    if(categorias.response.length){
         select.innerHTML = `<option value="">Selecione uma opção:</option>`;
-        select.innerHTML += categorias.map(item => `<option value="${item.nomeCategoria}">${item.nomeCategoria}</option>`);
+        select.innerHTML += categorias.response.map(item => `<option value="${item.nomeCategoria}">${item.nomeCategoria}</option>`);
     }
 }
 
-export function preencherModal(i){
-    console.log(i);
+export async function preencherModal(i){
     const modal = document.querySelector("#detalhesPedido");
     const dadosCliente = document.querySelector(".dadosCliente");
     const itens = document.querySelector(".itens");
     const total = document.querySelector("#totalDetalhes");
     const botoes = document.querySelector("#botoesDetalhes");
-    const pedidos = pegarBanco("pedidos");
+    const data = (await pegarBanco("pedidos")).response;
+    const pedidos = await pegarChavesEstrangeiras("pedidos", data);
     let alturaModal = 350;
     let precoTotal = 0;
 
@@ -254,8 +378,8 @@ export function preencherModal(i){
 
     dadosCliente.innerHTML = "";
     dadosCliente.innerHTML = `
-        <p class="nome" id="nome"><span>Cliente: </span> ${cliente.nome}</p>
-        <p class="Telefone" id="telefone"><span>Telefone: </span>${cliente.telefone}</p>
+        <p class="nome" id="nome"><span>Cliente: </span> ${cliente.nomeCliente}</p>
+        <p class="Telefone" id="telefone"><span>Telefone: </span>${cliente.telefoneCliente}</p>
     `
 
     if(cliente.mensagem){
@@ -317,13 +441,11 @@ export function preencherModal(i){
                 button.addEventListener("click", (event)=>{
                     let id = event.target.dataset.id;
                     let produtosEdicao = JSON.parse(localStorage.getItem("produtosEdicao"));
-                    console.log("id: " + id);
 
                     const quantidade = document.querySelector(`#PrQ${id}`);
                     quantidade.innerText++;
                     produtosEdicao[id].quantidade++;
                     salvar(produtosEdicao, "produtosEdicao");
-                    console.log(produtosEdicao);
 
                     const totalEdicao = document.querySelector("#total");
                     totalEdicao.innerText = "R$" + calcularTotal(produtosEdicao).toFixed(2);
@@ -334,14 +456,12 @@ export function preencherModal(i){
                 button.addEventListener("click", (event)=>{
                     let id = event.target.dataset.id;
                     let produtosEdicao = JSON.parse(localStorage.getItem("produtosEdicao"));
-                    console.log("id: " + id);
 
                     const quantidade = document.querySelector(`#PrQ${id}`);
                     if(quantidade.innerText > 1){
                         quantidade.innerText--;
                         produtosEdicao[id].quantidade--;
                         salvar(produtosEdicao, "produtosEdicao");
-                        console.log(produtosEdicao);
                     }else{
                         console.log("Chegou a 0")
                     }
@@ -358,7 +478,6 @@ export function preencherModal(i){
 
                     produtosEdicao.splice(id, 1);
                     salvar(produtosEdicao, "produtosEdicao");
-                    console.log(produtosEdicao);
 
                     pedidos.innerHTML = produtosEdicao.map((item, index) => `
                         <li class="pedido">

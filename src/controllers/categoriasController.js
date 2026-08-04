@@ -7,11 +7,25 @@ export async function get(req, res){
     if(categorias.sucesso){
         res.status(200).json({
             sucesso: true,
-            categorias: categorias.response
+            response: categorias.response
         });
     }else{
         res.status(500).json(categorias);
     }
+}
+
+export async function getUnico(req, res){
+    const id = req.params.id;
+    if(!id || !Number(id)){
+        res.status(400).json({
+            sucesso: false,
+            Erro: "Dados inválidos!"
+        })
+        return
+    }
+
+    const resposta = await selectUnico("idCategoria = ?", [id], "categorias");
+    res.status(resposta.status).json(resposta);
 }
 
 export async function post(req, res){
@@ -35,6 +49,7 @@ export async function post(req, res){
 export async function put(req, res){
     const { nomeCategoria } = req.body;
     const id = req.params.id;
+    console.log(id)
     const existe = await selectUnico("idCategoria = ?", [id], "categorias");
     console.log(existe)
     if(existe.sucesso){

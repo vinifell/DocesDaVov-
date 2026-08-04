@@ -1,11 +1,17 @@
-import { editar, excluir, preencherModal } from "./admin.js";
+import { editar, excluir, preencherModal, pegarBanco, pegarChavesEstrangeiras } from "./admin.js";
 
-export function renderizarTabelas(localizacao){
-    let banco = JSON.parse(localStorage.getItem(localizacao));
+export async function renderizarTabelas(localizacao){
+    let resposta = await pegarBanco(localizacao);
+    let dados = resposta.response;
+    let banco = await pegarChavesEstrangeiras(localizacao, dados);
     const tabela = document.querySelector("#tabela");
-
     tabela.innerHTML = templateHeader[localizacao];
+
+    //Conectar front com Back
+    //trocar os id pelos nomes
     tabela.innerHTML += banco.map((data, index) => templates[localizacao](data, index)).join("");
+
+
     tabela.addEventListener('click', (e) => {
         if(e.target.classList.contains("editar")){
             editar(e.target.dataset.id);
@@ -52,9 +58,9 @@ const templateHeader = {
 const templates = {
     pedidos: (item, i) => `
         <tr class="data">
-            <td>#${i}</td>
-            <td>${item.cliente.nome}</td>
-            <td>${item.cliente.telefone}</td>
+            <td>#${item.cliente.idPedido}</td>
+            <td>${item.cliente.nomeCliente}</td>
+            <td>${item.cliente.telefoneCliente}</td>
             <td>${item.hora}</td>
             <td>
                 <select name="status" id="status">
@@ -63,7 +69,7 @@ const templates = {
                     <option value="concluido">Concluído</option>
                 </select>
             </td>
-            <td><button commandFor="detalhesPedido" command="show-modal" data-id="${i}" class="verItens">Ver itens</button></td>
+            <td><button commandFor="detalhesPedido" command="show-modal" data-id="${item.idPedido}" class="verItens">Ver itens</button></td>
         </tr>
     `,
     produtos: (item, i) => `
@@ -71,11 +77,11 @@ const templates = {
             <td>${item.nomeProduto}</td>
             <td>${item.nomeCategoria}</td>
             <td>R$${item.preco}</td>
-            <td class="${item.disponivel}">${item.disponivel == "on"? "Disponivel": "Indisponível"}</td>
+            <td class="${item.disponivel == 1 ? "on" : "off"}">${item.disponivel == 1? "Disponivel": "Indisponível"}</td>
             <td>                
                 <section>
-                    <button class="editar" data-id=${i} commandfor="modalCategoria" command="show-modal">Editar</button>
-                    <button class="deletar" data-id=${i} command="show-modal" commandFor="modalCerteza">Excluir</button>
+                    <button class="editar" data-id=${item.idProduto} commandfor="modalCategoria" command="show-modal">Editar</button>
+                    <button class="deletar" data-id=${item.idProduto} command="show-modal" commandFor="modalCerteza">Excluir</button>
                 </section>
             </td>
         </tr>
@@ -85,8 +91,8 @@ const templates = {
             <td>${item.nomeCategoria}</td>
             <td>
                 <section>
-                    <button class="editar" data-id=${i} commandfor="modalCategoria" command="show-modal">Editar</button>
-                    <button class="deletar" data-id=${i} command="show-modal" commandFor="modalCerteza">Excluir</button>
+                    <button class="editar" data-id=${item.idCategoria} commandfor="modalCategoria" command="show-modal">Editar</button>
+                    <button class="deletar" data-id=${item.idCategoria} command="show-modal" commandFor="modalCerteza">Excluir</button>
                 </section>
             </td>
         </tr>
